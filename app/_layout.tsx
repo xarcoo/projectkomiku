@@ -7,14 +7,17 @@ function RootLayout() {
   const router = useRouter();
   useEffect(() => {
     if (!isLoggedIn) {
-      router.replace("./login");
+      router.replace("/login");
     } else {
       router.replace("./drawer/");
     }
   }, [isLoggedIn]);
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ title: "Home" }} />
+      <Stack.Screen
+        name="login"
+        options={{ title: "160421050 - 160421110", headerBackVisible: false }}
+      />
       <Stack.Screen name="drawer" options={{ headerShown: false }} />
     </Stack>
   );
