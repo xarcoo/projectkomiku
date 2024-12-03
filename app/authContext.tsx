@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Define AuthContext types
@@ -40,7 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Function to handle login
   const login = async () => {
-    await AsyncStorage.setItem("userToken", "dummy-token"); // Store token
+    await AsyncStorage.setItem("userToken", "160421050-160421110"); // Store token
     setIsLoggedIn(true);
   };
 
