@@ -37,11 +37,18 @@ function Login() {
   };
 
   return (
-    <Card>
+    <Card containerStyle={{
+      borderRadius: 10
+    }}>
       <Card.Title style={{ fontFamily: "verdana" }}>Silakan Login</Card.Title>
       <Card.Divider />
       <View style={styles.viewRow}>
-        <Text style={{ fontFamily: "verdana" }}>Username </Text>
+        <Text style={{
+          fontFamily: "verdana",
+          textAlign: "left",
+          width: 200,
+          marginBottom: 8
+        }}>Username </Text>
         <TextInput
           style={styles.input}
           onChangeText={(text) => setUsername(text)}
@@ -49,7 +56,12 @@ function Login() {
         />
       </View>
       <View style={styles.viewRow}>
-        <Text style={{ fontFamily: "verdana" }}>Password </Text>
+        <Text style={{
+          fontFamily: "verdana",
+          textAlign: "left",
+          width: 200,
+          marginBottom: 8
+        }}>Password </Text>
         <TextInput
           secureTextEntry={true}
           style={styles.input}
@@ -63,7 +75,7 @@ function Login() {
           titleStyle={{ fontWeight: "bold" }}
           buttonStyle={{
             backgroundColor: "rgba(111, 202, 186, 1)",
-            borderRadius: 3,
+            borderRadius: 8,
           }}
           title="Submit"
           onPress={() => {
@@ -78,22 +90,24 @@ function Login() {
 export default Login;
 
 const styles = StyleSheet.create({
+  cardStyle:{
+    height: 100
+  },
   input: {
     height: 40,
     width: 200,
     borderWidth: 1,
     padding: 10,
     fontFamily: "verdana",
+    borderRadius: 8,
   },
   button: {
-    height: 40,
     width: 200,
   },
   viewRow: {
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    paddingRight: 50,
-    margin: 3,
+    margin: 10,
   },
 });

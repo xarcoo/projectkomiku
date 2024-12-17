@@ -3,7 +3,10 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthProvider } from "../authContext";
 import Index from "./index";
-import Logout from "./logout";
+import Kategori from "./kategori";
+import DaftarKomik from "./daftarkomik";
+import TambahKomik from "./tambahkomik";
+import Logout from './logout';
 
 const Drawer = createDrawerNavigator();
 
@@ -33,6 +36,21 @@ function DrawerLayout() {
         name="home"
         component={Index}
         options={{ drawerLabel: "Home", title: username }}
+      />
+      <Drawer.Screen
+        name="kategori"
+        component={Kategori}
+        options={{ drawerLabel: "Kategori", title: "Kategori" }}
+      />
+      <Drawer.Screen
+        name="daftarkomik"
+        component={DaftarKomik}
+        options={{ drawerLabel: "Daftar Komik", title: "Daftar Komik" }}
+      />
+      <Drawer.Screen
+        name="tambahkomik"
+        component={TambahKomik}
+        options={{ drawerLabel: "Tambah Komik", title: "Tambah Komik" }}
       />
       <Drawer.Screen
         name="logout"
