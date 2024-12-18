@@ -15,7 +15,7 @@ function Login() {
       headers: new Headers({
         "Content-Type": "application/x-www-form-urlencoded",
       }),
-      body: "uid=" + username + "&upw=" + password,
+      body: "un=" + username + "&upw=" + password,
     };
     const response = await fetch(
       "https://ubaya.xyz/react/160421050/login.php",
@@ -37,18 +37,24 @@ function Login() {
   };
 
   return (
-    <Card containerStyle={{
-      borderRadius: 10
-    }}>
+    <Card
+      containerStyle={{
+        borderRadius: 10,
+      }}
+    >
       <Card.Title style={{ fontFamily: "verdana" }}>Silakan Login</Card.Title>
       <Card.Divider />
       <View style={styles.viewRow}>
-        <Text style={{
-          fontFamily: "verdana",
-          textAlign: "left",
-          width: 200,
-          marginBottom: 8
-        }}>Username </Text>
+        <Text
+          style={{
+            fontFamily: "verdana",
+            textAlign: "left",
+            width: 200,
+            marginBottom: 8,
+          }}
+        >
+          Username{" "}
+        </Text>
         <TextInput
           style={styles.input}
           onChangeText={(text) => setUsername(text)}
@@ -56,12 +62,16 @@ function Login() {
         />
       </View>
       <View style={styles.viewRow}>
-        <Text style={{
-          fontFamily: "verdana",
-          textAlign: "left",
-          width: 200,
-          marginBottom: 8
-        }}>Password </Text>
+        <Text
+          style={{
+            fontFamily: "verdana",
+            textAlign: "left",
+            width: 200,
+            marginBottom: 8,
+          }}
+        >
+          Password{" "}
+        </Text>
         <TextInput
           secureTextEntry={true}
           style={styles.input}
@@ -90,8 +100,8 @@ function Login() {
 export default Login;
 
 const styles = StyleSheet.create({
-  cardStyle:{
-    height: 100
+  cardStyle: {
+    height: 100,
   },
   input: {
     height: 40,
