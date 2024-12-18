@@ -18,7 +18,7 @@ function Login() {
       body: "un=" + username + "&upw=" + password,
     };
     const response = await fetch(
-      "https://ubaya.xyz/react/160421050/login.php",
+      "https://ubaya.xyz/react/160421050/uas/login.php",
       options
     );
     const json = await response.json();
