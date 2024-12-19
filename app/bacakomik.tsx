@@ -10,7 +10,7 @@ export default function BacaKomik() {
   const [comic, setComic] = useState(null);
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
-  const [rating, setRating] = useState(0);
+  const [userRating, setUserRating] = useState(0);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -19,6 +19,7 @@ export default function BacaKomik() {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+
   const getUsername = async () => {
     try {
       const storedUsername = await AsyncStorage.getItem("username");
@@ -46,7 +47,39 @@ export default function BacaKomik() {
       const json = await response.json();
 
       if (json.result === "success") {
-        setComic(json.data);
+        const comicData = json.data;
+
+        if (comicData.rating && Array.isArray(comicData.rating) && comicData.rating.length > 0) {
+          let totalRating = 0;
+          console.log(comicData.rating)
+
+
+          for (const item of comicData.rating) {
+            totalRating += parseFloat(item.rating);
+          }
+          comicData.averageRating = (totalRating / comicData.rating.length).toFixed(1);
+        } else {
+          comicData.averageRating = "0.0";
+        }
+
+        if (comicData.kategori && Array.isArray(comicData.kategori) && comicData.kategori.length > 0) {
+          let categoryValues = [];
+        
+          for (const item of comicData.kategori) {
+            categoryValues.push(item.kategori);
+          }
+      
+          comicData.kategoriString = categoryValues.join(", ");
+        } else {
+          comicData.kategoriString = "Belum ada kategori";
+        }
+
+        const storedUsername = await AsyncStorage.getItem("username");
+        const userRating = comicData.rating.find(r => r.username === storedUsername);
+        setUserRating(userRating ? userRating.rating : 0);
+
+        setComic(comicData);
+
       } else {
         alert("Failed to load comic details");
       }
@@ -69,17 +102,19 @@ export default function BacaKomik() {
       </Svg>
     </TouchableOpacity>
   );
+
   const handleStarPress = (value) => {
-    setRating(value);
+    setUserRating(value);
     sendRating(value);
   };
+
   const sendRating = async (ratingValue) => {
     const options = {
       method: "POST",
       headers: new Headers({
         "Content-Type": "application/x-www-form-urlencoded",
       }),
-      body: `rating=${ratingValue}&username=${username}`,
+      body: `rating=${ratingValue}&username=${username}&idkomik=${id}`,
     };
 
     try {
@@ -88,6 +123,7 @@ export default function BacaKomik() {
 
       if (resjson.result === 'success') {
         alert('Rating berhasil dikirim!');
+        fetchComicDetails()
       } else {
         alert('Gagal mengirim rating');
       }
@@ -169,7 +205,7 @@ export default function BacaKomik() {
               <Text style={styles.title}>{comic.judul}</Text>
               <Text style={styles.info}>
                 <Text style={styles.infoLabel}>Kategori: </Text>
-                Belumm, kiw kiw, omagaaa
+                {comic.kategoriString}
               </Text>
               <Text style={styles.info}>
                 <Text style={styles.infoLabel}>Tanggal Rilis: </Text>
@@ -177,7 +213,7 @@ export default function BacaKomik() {
               </Text>
               <Text style={styles.info}>
                 <Text style={styles.infoLabel}>Rating: </Text>
-                {comic.rating}/5
+                {comic.averageRating}/5.0
               </Text>
               <Link
                 push
@@ -212,12 +248,12 @@ export default function BacaKomik() {
         )}
       />
       <View style={styles.card2}>
-        <Text style={styles.labelRating}>Rating</Text>
+        <Text style={styles.labelRating}>Berikan Rating</Text>
         <View style={styles.ratingContainer}>
           {[1, 2, 3, 4, 5].map((value) => (
             <Star
               key={value}
-              fill={value <= rating}
+              fill={value <= userRating}  // Fill stars based on userRating
               onPress={() => handleStarPress(value)}
             />
           ))}
