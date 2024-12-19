@@ -188,6 +188,8 @@ export default function UpdateKomik() {
             </View>
           </View>
         )}
+        nestedScrollEnabled={true}
+        scrollEnabled={false}
       />
       <View style={styles.containerUpload}>
         <Text style={styles.fontTop}>Upload Scene:</Text>

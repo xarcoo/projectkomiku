@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, Image, Text, View, StyleSheet, ScrollView } from "react-native";
-import { Link, useLocalSearchParams } from "expo-router"; 
+import { Link, useLocalSearchParams } from "expo-router";
 
 export default function DaftarKomik() {
   const [results, setResults] = useState([]);
@@ -17,7 +17,7 @@ export default function DaftarKomik() {
       };
       const response = await fetch("https://ubaya.xyz/react/160421050/uas/komik.php", options);
       const json = await response.json();
-      
+
       if (json.result === "success") {
         setResults(json.data);
         console.log(json.data)
@@ -30,7 +30,7 @@ export default function DaftarKomik() {
   };
 
   useEffect(() => {
-      fetchComicsCategory();
+    fetchComicsCategory();
   }, [id, nameCate]);
 
   return (
@@ -41,19 +41,21 @@ export default function DaftarKomik() {
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         renderItem={({ item }) => (
-                  <Link
-                    push
-                    href={{ pathname: "/bacakomik", params: { id: item.id } }}
-                    style={styles.comicCard}
-                  >
-                    <Image
-                      source={{ uri: item.thumbnail }}
-                      style={styles.comicImage}
-                      resizeMode="cover"
-                    />
-                    <Text style={styles.comicText}>{item.judul}</Text>
-                  </Link>
-                )}
+          <Link
+            push
+            href={{ pathname: "/bacakomik", params: { id: item.id } }}
+            style={styles.comicCard}
+          >
+            <Image
+              source={{ uri: item.thumbnail }}
+              style={styles.comicImage}
+              resizeMode="cover"
+            />
+            <Text style={styles.comicText}>{item.judul}</Text>
+          </Link>
+        )}
+        nestedScrollEnabled={true}
+        scrollEnabled={false}
       />
     </ScrollView>
   );

@@ -64,11 +64,11 @@ export default function BacaKomik() {
 
         if (comicData.kategori && Array.isArray(comicData.kategori) && comicData.kategori.length > 0) {
           let categoryValues = [];
-        
+
           for (const item of comicData.kategori) {
             categoryValues.push(item.kategori);
           }
-      
+
           comicData.kategoriString = categoryValues.join(", ");
         } else {
           comicData.kategoriString = "Belum ada kategori";
@@ -235,7 +235,7 @@ export default function BacaKomik() {
       </View>
       <FlatList
         data={comic.konten}
-        keyExtractor={(item) => item}
+        keyExtractor={(item, index) => `content-${index}`}
         contentContainerStyle={{ alignItems: "center" }}
         renderItem={({ item }) => (
           <View style={styles.imageContainer}>
@@ -246,14 +246,18 @@ export default function BacaKomik() {
             />
           </View>
         )}
+        nestedScrollEnabled={true}
+        scrollEnabled={false} //mengindari scroll double
       />
+
+
       <View style={styles.card2}>
         <Text style={styles.labelRating}>Berikan Rating</Text>
         <View style={styles.ratingContainer}>
           {[1, 2, 3, 4, 5].map((value) => (
             <Star
               key={value}
-              fill={value <= userRating}  // Fill stars based on userRating
+              fill={value <= userRating}
               onPress={() => handleStarPress(value)}
             />
           ))}
@@ -272,7 +276,7 @@ export default function BacaKomik() {
         </View>
         <FlatList
           data={comic.komentar}
-          keyExtractor={(item) => item}
+          keyExtractor={(item, index) => `comment-${index}`}
           contentContainerStyle={{ alignItems: "stretch", width: '100%' }}
           renderItem={({ item }) => (
             <View style={styles.cardComment}>
@@ -282,7 +286,11 @@ export default function BacaKomik() {
               </Text>
             </View>
           )}
+          nestedScrollEnabled={true}
+          scrollEnabled={false}
         />
+
+
       </View>
     </ScrollView>
   );
