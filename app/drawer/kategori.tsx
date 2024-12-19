@@ -21,7 +21,7 @@ export default function Kategori() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Categories</Text>
+      <Text style={styles.sectionTitle}>Kategori</Text>
       <FlatList
         data={categories}
         keyExtractor={(item) => item.id.toString()}

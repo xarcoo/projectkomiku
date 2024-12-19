@@ -8,6 +8,7 @@ import DaftarKomik from "./daftarkomik";
 import TambahKomik from "./tambahkomik";
 import UpdateKomik from "../updatekomik";
 import Logout from './logout';
+import HalamanCari from "./halamancari";
 
 const Drawer = createDrawerNavigator();
 
@@ -39,9 +40,14 @@ function DrawerLayout() {
         options={{ drawerLabel: "Home", title: username }}
       />
       <Drawer.Screen
+        name="halamancari"
+        component={HalamanCari}
+        options={{ drawerLabel: "Cari Komik", title: "Cari Komik" }}
+      />
+      <Drawer.Screen
         name="kategori"
         component={Kategori}
-        options={{ drawerLabel: "Kategori", title: "Kategori" }}
+        options={{ drawerLabel: "Kategori", title: "Kategori Komik" }}
       />
       <Drawer.Screen
         name="tambahkomik"

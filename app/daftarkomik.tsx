@@ -35,7 +35,7 @@ export default function DaftarKomik() {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.sectionTitle}>{nameCate} Category</Text>
+      <Text style={styles.sectionTitle}>Kategori {nameCate}</Text>
       <FlatList
         data={results}
         keyExtractor={(item) => item.id.toString()}

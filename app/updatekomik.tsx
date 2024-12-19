@@ -140,29 +140,30 @@ export default function UpdateKomik() {
   };
 
   const deleteScene = async (sceneUri) => {
-    const updatedScenes = scenes.filter(scene => scene !== sceneUri);
-    setScenes(updatedScenes);
-
-    const data = new FormData();
-    data.append('movie_id', movieId);
-    data.append('scene_uri', sceneUri);
-
-    const options = {
-      method: 'POST',
-      body: data,
-      headers: {},
-    };
-
+    const fileName = sceneUri.split('/').pop(); // Extract file name from URI
+  
+    const formData = new FormData();
+    formData.append('movie_id', movieId);
+    formData.append('filename', fileName);
+  
     try {
-      fetch('https://ubaya.xyz/react/160421050/uas/deletehalaman.php', options)
-        .then(response => response.json())
-        .then(resjson => {
-          if (resjson.result === 'success') alert('Scene deleted');
-        });
+      const response = await fetch('https://ubaya.xyz/react/160421050/uas/deletehalaman.php', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      const resjson = await response.json();
+      if (resjson.result === 'success') {
+        alert('Scene deleted successfully');
+        setScenes(prevScenes => prevScenes.filter(scene => scene !== sceneUri));
+      } else {
+        alert(`Failed to delete scene: ${resjson.message}`);
+      }
     } catch (error) {
-      console.log(error);
+      console.error('Error deleting scene:', error);
     }
   };
+  
 
   return (
     <ScrollView style={styles.container}>

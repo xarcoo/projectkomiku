@@ -12,20 +12,10 @@ import {
   ScrollView,
 } from "react-native";
 
-export default function Index() {
-  const [categories, setCategories] = useState([]);
+export default function HalamanCari() {
   const [searchText, setSearchText] = useState("");
   const [results, setResults] = useState([]);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch("https://ubaya.xyz/react/160421050/uas/kategori.php");
-      const json = await response.json();
-      setCategories(json.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
 
   const searchComics = async (query = "") => {
     try {
@@ -51,33 +41,9 @@ export default function Index() {
       console.error("Error searching comics:", error);
     }
   };
-  const searchComicsCategory = async (query = "") => {
-    try {
-      const options = {
-        method: "POST",
-        headers: new Headers({
-          "Content-Type": "application/x-www-form-urlencoded",
-        }),
-        body: "kategori=" + query,
-      };
-      const response = await fetch(
-        "https://ubaya.xyz/react/160421050/uas/komik.php",
-        options
-      );
-      const json = await response.json();
-      console.log(json);
-      if (json.result === "success") {
-        setResults(json.data);
-      } else {
-        alert("Failed to fetch comics");
-      }
-    } catch (error) {
-      console.error("Error searching comics:", error);
-    }
-  };
+
 
   useEffect(() => {
-    fetchCategories();
     searchComics();
   }, []);
 
@@ -96,23 +62,6 @@ export default function Index() {
       >
         <Text style={styles.searchButtonText}>Cari</Text>
       </TouchableOpacity>
-
-
-      <Text style={styles.sectionTitle}>Kategori</Text>
-      <FlatList
-        data={categories}
-        keyExtractor={(item) => item.id.toString()}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.categoryButton}
-            onPress={() => searchComicsCategory(item.id.toString())}
-          >
-            <Text style={styles.categoryText}>{item.nama}</Text>
-          </TouchableOpacity>
-        )}
-      />
 
 
       <Text style={styles.sectionTitle}>Hasil</Text>
