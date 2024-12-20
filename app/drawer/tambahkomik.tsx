@@ -91,12 +91,22 @@ export default function TambahKomik() {
       console.log(error);
     }
   };
+
+  const tambahKomik = async () => {
+
+  };
   
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.fontTop}>Judul:</Text>
       <Text style={styles.fontTop}>Deskripsi:</Text>
+      <Text style={styles.fontTop}>Tanggal Rilis:</Text>
+      
+      <Text style={styles.fontTop}>Kategori:</Text>
+
+      <Button title='Tambah Kategori' onPress={() => tambahKomik()} />
+
 
       <View style={styles.containerUpload}>
         <Text style={styles.fontTop}>Upload Scene:</Text>
@@ -118,6 +128,7 @@ export default function TambahKomik() {
 
         {renderImageUri()}
         <Button title='Pick Scene' onPress={() => refRBSheet.current.open()} />
+        <Button title='Tambah Komik' onPress={() => tambahKomik()} />
       </View>
     </ScrollView>
   );
