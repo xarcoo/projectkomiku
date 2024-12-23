@@ -16,7 +16,6 @@ export default function HalamanCari() {
   const [searchText, setSearchText] = useState("");
   const [results, setResults] = useState([]);
 
-
   const searchComics = async (query = "") => {
     try {
       const options = {
@@ -42,7 +41,6 @@ export default function HalamanCari() {
     }
   };
 
-
   useEffect(() => {
     searchComics();
   }, []);
@@ -63,8 +61,7 @@ export default function HalamanCari() {
         <Text style={styles.searchButtonText}>Cari</Text>
       </TouchableOpacity>
 
-
-      <Text style={styles.sectionTitle}>Hasil</Text>
+      <Text style={styles.sectionTitle}>Komik</Text>
       <FlatList
         data={results}
         key={(results.length > 0).toString()}
@@ -156,5 +153,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
 });

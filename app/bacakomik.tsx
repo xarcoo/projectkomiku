@@ -1,8 +1,25 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
-import { View, Text, FlatList, StyleSheet, Image, ScrollView, ActivityIndicator, TextInput, Button, Dimensions, TouchableOpacity } from "react-native";
+import {
+  Link,
+  useRouter,
+  useLocalSearchParams,
+  useFocusEffect,
+} from "expo-router";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+  TextInput,
+  Button,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path } from "react-native-svg";
 
 export default function BacaKomik() {
   const { id } = useLocalSearchParams();
@@ -49,20 +66,29 @@ export default function BacaKomik() {
       if (json.result === "success") {
         const comicData = json.data;
 
-        if (comicData.rating && Array.isArray(comicData.rating) && comicData.rating.length > 0) {
+        if (
+          comicData.rating &&
+          Array.isArray(comicData.rating) &&
+          comicData.rating.length > 0
+        ) {
           let totalRating = 0;
-          console.log(comicData.rating)
-
+          console.log(comicData.rating);
 
           for (const item of comicData.rating) {
             totalRating += parseFloat(item.rating);
           }
-          comicData.averageRating = (totalRating / comicData.rating.length).toFixed(1);
+          comicData.averageRating = (
+            totalRating / comicData.rating.length
+          ).toFixed(1);
         } else {
           comicData.averageRating = "0.0";
         }
 
-        if (comicData.kategori && Array.isArray(comicData.kategori) && comicData.kategori.length > 0) {
+        if (
+          comicData.kategori &&
+          Array.isArray(comicData.kategori) &&
+          comicData.kategori.length > 0
+        ) {
           let categoryValues = [];
 
           for (const item of comicData.kategori) {
@@ -75,11 +101,12 @@ export default function BacaKomik() {
         }
 
         const storedUsername = await AsyncStorage.getItem("username");
-        const userRating = comicData.rating.find(r => r.username === storedUsername);
+        const userRating = comicData.rating.find(
+          (r) => r.username === storedUsername
+        );
         setUserRating(userRating ? userRating.rating : 0);
 
         setComic(comicData);
-
       } else {
         alert("Failed to load comic details");
       }
@@ -118,18 +145,21 @@ export default function BacaKomik() {
     };
 
     try {
-      const response = await fetch('https://ubaya.xyz/react/160421050/uas/tambahrating.php', options);
+      const response = await fetch(
+        "https://ubaya.xyz/react/160421050/uas/tambahrating.php",
+        options
+      );
       const resjson = await response.json();
 
-      if (resjson.result === 'success') {
-        alert('Rating berhasil dikirim!');
-        fetchComicDetails()
+      if (resjson.result === "success") {
+        alert("Rating berhasil dikirim!");
+        fetchComicDetails();
       } else {
-        alert('Gagal mengirim rating');
+        alert("Gagal mengirim rating");
       }
     } catch (error) {
-      console.error('Terjadi kesalahan:', error);
-      alert('Terjadi kesalahan saat mengirim rating');
+      console.error("Terjadi kesalahan:", error);
+      alert("Terjadi kesalahan saat mengirim rating");
     }
   };
 
@@ -219,10 +249,12 @@ export default function BacaKomik() {
                 push
                 href={{
                   pathname: "/updatekomik",
-                  params: { movieid: id },
+                  params: { id: id },
                 }}
                 style={styles.editLink}
-              >Edit</Link>
+              >
+                Edit
+              </Link>
             </View>
           </View>
 
@@ -242,14 +274,13 @@ export default function BacaKomik() {
             <Image
               style={styles.image}
               resizeMode="contain"
-              source={{ uri: 'https://ubaya.xyz/react/160421050/uas/' + item }}
+              source={{ uri: "https://ubaya.xyz/react/160421050/uas/" + item }}
             />
           </View>
         )}
         nestedScrollEnabled={true}
         scrollEnabled={false} //mengindari scroll double
       />
-
 
       <View style={styles.card2}>
         <Text style={styles.labelRating}>Berikan Rating</Text>
@@ -263,7 +294,9 @@ export default function BacaKomik() {
           ))}
         </View>
 
-        <Text style={styles.infoLabel2}>Komentar({comic.komentar.length}): </Text>
+        <Text style={styles.infoLabel2}>
+          Komentar({comic.komentar.length}):{" "}
+        </Text>
         <View style={styles.commentInputContainer}>
           <TextInput
             style={styles.textInput}
@@ -272,12 +305,16 @@ export default function BacaKomik() {
             onChangeText={setNewComment}
             multiline
           />
-          <Button title="Kirim Komentar" onPress={handleAddComment} color="#007BFF" />
+          <Button
+            title="Kirim Komentar"
+            onPress={handleAddComment}
+            color="#007BFF"
+          />
         </View>
         <FlatList
           data={comic.komentar}
           keyExtractor={(item, index) => `comment-${index}`}
-          contentContainerStyle={{ alignItems: "stretch", width: '100%' }}
+          contentContainerStyle={{ alignItems: "stretch", width: "100%" }}
           renderItem={({ item }) => (
             <View style={styles.cardComment}>
               <Text style={styles.info}>
@@ -289,8 +326,6 @@ export default function BacaKomik() {
           nestedScrollEnabled={true}
           scrollEnabled={false}
         />
-
-
       </View>
     </ScrollView>
   );
@@ -300,7 +335,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    width: '100%'
+    width: "100%",
   },
   cardcontainer: {
     padding: 20,
@@ -320,15 +355,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 20,
     padding: 16,
-    width: '100%',
-
+    width: "100%",
   },
   card2: {
     borderWidth: 1,
     borderColor: "#ddd",
     marginTop: 20,
     padding: 16,
-    width: "100%"
+    width: "100%",
   },
   cardHeader: {
     flexDirection: "row",
@@ -362,7 +396,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   labelRating: {
-    textAlign: 'center',
+    textAlign: "center",
     fontWeight: "bold",
     fontSize: 16,
     marginBottom: 4,
@@ -427,8 +461,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   ratingContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 4,
     marginBottom: 40,
   },

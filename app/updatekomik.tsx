@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import {
   ScrollView,
   Text,
@@ -7,39 +7,39 @@ import {
   Image,
   Button,
   StyleSheet,
-  TouchableOpacity
-} from 'react-native';
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
-import * as ImagePicker from 'expo-image-picker';
-import { useLocalSearchParams } from 'expo-router';
+import * as ImagePicker from "expo-image-picker";
+import { useLocalSearchParams } from "expo-router";
 
 export default function UpdateKomik() {
-  const [title, setTitle] = useState('');
-  const [releasedate, setReleasedate] = useState('');
-  const [thumbnail, setThumbnail] = useState('');
-  const [description, setDesc] = useState('');
-  const [author, setAuthor] = useState('');
+  const [title, setTitle] = useState("");
+  const [releasedate, setReleasedate] = useState("");
+  const [description, setDesc] = useState("");
+  const [author, setAuthor] = useState("");
   const [scenes, setScenes] = useState(null);
 
-  const [movieDetails, setMovieDetails] = useState({
-    title: '',
-    releasedate: '',
-    thumbnail: '',
-    description: '',
-    author: '',
-    scenes: null
+  const [komik, setKomik] = useState({
+    judul: "",
+    deskripsi: "",
+    tanggal_rilis: "",
+    pengarang: "",
+    konten: null,
   });
   const [triggerRefresh, setTriggerRefresh] = useState(false);
   const refRBSheet = useRef();
-  const [imageUri, setImageUri] = useState('');
-  const [movieId, setMovieId] = useState('1');
+  const [imageUri, setImageUri] = useState("");
+  const [id, setId] = useState("1");
   const params = useLocalSearchParams();
 
   useEffect(() => {
-    if (params.movieid) {
-      setMovieId(params.movieid.toString());
+    if (params.id) {
+      setId(params.id.toString());
+      console.log(id);
     }
-  }, [params.movieid]);
+  }, [params.id]);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -49,7 +49,7 @@ export default function UpdateKomik() {
           headers: new Headers({
             "Content-Type": "application/x-www-form-urlencoded",
           }),
-          body: "id=" + movieId,
+          body: "id=" + id,
         };
         const response = await fetch(
           "https://ubaya.xyz/react/160421050/uas/detailkomik.php",
@@ -58,33 +58,33 @@ export default function UpdateKomik() {
         const json = await response.json();
 
         if (json.result === "success") {
-          setMovieDetails(json.data);
+          setKomik(json.data);
         } else {
           alert("Failed to load comic details");
         }
+        console.log(komik);
       } catch (error) {
         console.error("Error fetching comic details:", error);
       }
-    }
+    };
 
-    if (movieId) {
+    if (id) {
       fetchMovieDetails();
     }
-  }, [movieId, triggerRefresh]);
+  }, [id, triggerRefresh]);
 
   useEffect(() => {
-    if (movieDetails) {
-      setTitle(movieDetails.title || '');
-      setReleasedate(movieDetails.tanggal_rilis || '');
-      setThumbnail(movieDetails.thumbnail || '');
-      setDesc(movieDetails.description || '');
-      setAuthor(movieDetails.pengarang || '');
-      setScenes(movieDetails.konten);
+    if (komik) {
+      setTitle(komik.judul || "");
+      setReleasedate(komik.tanggal_rilis || "");
+      setDesc(komik.deskripsi || "");
+      setAuthor(komik.pengarang || "");
+      setScenes(komik.konten);
     }
-  }, [movieDetails]);
+  }, [komik]);
 
   const renderImageUri = () => {
-    if (imageUri !== '') {
+    if (imageUri !== "") {
       return (
         <View style={styles.centered}>
           <Image
@@ -113,25 +113,25 @@ export default function UpdateKomik() {
 
   const uploadScene = async () => {
     const data = new FormData();
-    data.append('movie_id', movieId);
+    data.append("id", id);
 
     const response = await fetch(imageUri);
     const blob = await response.blob();
-    data.append('image', blob, 'scene.png');
+    data.append("image", blob, "scene.png");
 
     const options = {
-      method: 'POST',
+      method: "POST",
       body: data,
       headers: {},
     };
 
     try {
-      fetch('https://ubaya.xyz/react/160421050/uas/uploadhalaman.php', options)
-        .then(response => response.json())
-        .then(resjson => {
+      fetch("https://ubaya.xyz/react/160421050/uas/uploadhalaman.php", options)
+        .then((response) => response.json())
+        .then((resjson) => {
           console.log(resjson);
-          if (resjson.result === 'success') alert('sukses');
-          setTriggerRefresh(prev => !prev);
+          if (resjson.result === "success") alert("sukses");
+          setTriggerRefresh((prev) => !prev);
           setImageUri("");
         });
     } catch (error) {
@@ -140,33 +140,53 @@ export default function UpdateKomik() {
   };
 
   const deleteScene = async (sceneUri) => {
-    const fileName = sceneUri.split('/').pop(); // Extract file name from URI
-  
+    const fileName = sceneUri.split("/").pop(); // Extract file name from URI
+
     const formData = new FormData();
-    formData.append('movie_id', movieId);
-    formData.append('filename', fileName);
-  
+    formData.append("id", id);
+    formData.append("filename", fileName);
+
     try {
-      const response = await fetch('https://ubaya.xyz/react/160421050/uas/deletehalaman.php', {
-        method: 'POST',
-        body: formData,
-      });
-  
+      const response = await fetch(
+        "https://ubaya.xyz/react/160421050/uas/deletehalaman.php",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
       const resjson = await response.json();
-      if (resjson.result === 'success') {
-        alert('Scene deleted successfully');
-        setScenes(prevScenes => prevScenes.filter(scene => scene !== sceneUri));
+      if (resjson.result === "success") {
+        alert("Scene deleted successfully");
+        setScenes((prevScenes) =>
+          prevScenes.filter((scene) => scene !== sceneUri)
+        );
       } else {
         alert(`Failed to delete scene: ${resjson.message}`);
       }
     } catch (error) {
-      console.error('Error deleting scene:', error);
+      console.error("Error deleting scene:", error);
     }
   };
-  
 
   return (
     <ScrollView style={styles.container}>
+      <Text style={styles.fontTop}>Judul:</Text>
+      <TextInput style={styles.input} onChangeText={setTitle} value={title} />
+      <Text style={styles.fontTop}>Deskripsi:</Text>
+      <TextInput
+        style={styles.input}
+        onChangeText={setDesc}
+        value={description}
+      />
+      <Text style={styles.fontTop}>Tanggal Rilis:</Text>
+      <TextInput
+        style={styles.input}
+        onChangeText={setReleasedate}
+        value={releasedate}
+      />
+      <Text style={styles.fontTop}>Nama Pengarang:</Text>
+      <TextInput style={styles.input} onChangeText={setAuthor} value={author} />
       <Text style={styles.fontTop}>Scenes:</Text>
       <FlatList
         data={scenes}
@@ -177,7 +197,9 @@ export default function UpdateKomik() {
               <Image
                 style={styles.sceneImage}
                 resizeMode="contain"
-                source={{ uri: 'https://ubaya.xyz/react/160421050/uas/' + item }}
+                source={{
+                  uri: "https://ubaya.xyz/react/160421050/uas/" + item,
+                }}
               />
               <TouchableOpacity
                 style={styles.deleteButton}
@@ -200,8 +222,8 @@ export default function UpdateKomik() {
           customStyles={{
             container: {
               justifyContent: "center",
-              alignItems: "center"
-            }
+              alignItems: "center",
+            },
           }}
         >
           <View style={styles.viewRow}>
@@ -210,7 +232,7 @@ export default function UpdateKomik() {
         </RBSheet>
 
         {renderImageUri()}
-        <Button title='Pick Scene' onPress={() => refRBSheet.current.open()} />
+        <Button title="Pick Scene" onPress={() => refRBSheet.current.open()} />
       </View>
     </ScrollView>
   );
@@ -220,24 +242,33 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
   },
-  fontTop:{
+  fontTop: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 20
+    marginBottom: 5,
+  },
+  input: {
+    height: 40,
+    width: "auto",
+    borderWidth: 1,
+    padding: 10,
+    fontFamily: "verdana",
+    borderRadius: 8,
+    marginBottom: 20,
   },
   viewRow: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: 'center',
-    marginVertical: 10
+    alignItems: "center",
+    marginVertical: 10,
   },
   containerUpload: {
-    marginTop: 20
+    marginTop: 20,
   },
   centered: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 10
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 10,
   },
   sceneImage: {
     width: 350,
@@ -252,15 +283,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 30,
-    width:120,
-    position: 'absolute',
-    backgroundColor: 'red',
+    width: 120,
+    position: "absolute",
+    backgroundColor: "red",
     padding: 5,
     borderRadius: 5,
     bottom: "50%",
   },
   deleteButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 14,
     fontWeight: "bold",
   },

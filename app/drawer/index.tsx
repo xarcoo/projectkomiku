@@ -19,7 +19,9 @@ export default function Index() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("https://ubaya.xyz/react/160421050/uas/kategori.php");
+      const response = await fetch(
+        "https://ubaya.xyz/react/160421050/uas/kategori.php"
+      );
       const json = await response.json();
       setCategories(json.data);
     } catch (error) {
@@ -97,7 +99,6 @@ export default function Index() {
         <Text style={styles.searchButtonText}>Cari</Text>
       </TouchableOpacity>
 
-
       <Text style={styles.sectionTitle}>Kategori</Text>
       <FlatList
         data={categories}
@@ -114,8 +115,7 @@ export default function Index() {
         )}
       />
 
-
-      <Text style={styles.sectionTitle}>Hasil</Text>
+      <Text style={styles.sectionTitle}>Komik</Text>
       <FlatList
         data={results}
         key={(results.length > 0).toString()}
@@ -207,5 +207,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
 });
