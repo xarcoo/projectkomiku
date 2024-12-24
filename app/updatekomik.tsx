@@ -5,7 +5,6 @@ import {
   View,
   FlatList,
   Image,
-  Button,
   StyleSheet,
   TouchableOpacity,
   TextInput,
@@ -13,19 +12,26 @@ import {
 import RBSheet from "react-native-raw-bottom-sheet";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams } from "expo-router";
+import RNPickerSelect from "react-native-picker-select";
+import { Button } from "@rneui/base";
 
 export default function UpdateKomik() {
   const [title, setTitle] = useState("");
   const [releasedate, setReleasedate] = useState("");
   const [description, setDesc] = useState("");
   const [author, setAuthor] = useState("");
+  const [category, setCategory] = useState(null);
   const [scenes, setScenes] = useState(null);
+
+  const [categoryOption, setCategoryOption] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const [komik, setKomik] = useState({
     judul: "",
     deskripsi: "",
     tanggal_rilis: "",
     pengarang: "",
+    kategori: null,
     konten: null,
   });
   const [triggerRefresh, setTriggerRefresh] = useState(false);
@@ -42,7 +48,7 @@ export default function UpdateKomik() {
   }, [params.id]);
 
   useEffect(() => {
-    const fetchMovieDetails = async () => {
+    const fetchKomik = async () => {
       try {
         const options = {
           method: "POST",
@@ -66,10 +72,28 @@ export default function UpdateKomik() {
       } catch (error) {
         console.error("Error fetching comic details:", error);
       }
+
+      try {
+        const options = {
+          method: "POST",
+          headers: new Headers({
+            "Content-Type": "application/x-www-form-urlencoded",
+          }),
+          body: "id=" + id,
+        };
+        const response = await fetch(
+          "https://ubaya.xyz/react/160421050/uas/pilihankategori.php",
+          options
+        );
+        const json = await response.json();
+        setCategoryOption(json.data);
+      } catch (error) {
+        console.error("Error fetching category option:", error);
+      }
     };
 
     if (id) {
-      fetchMovieDetails();
+      fetchKomik();
     }
   }, [id, triggerRefresh]);
 
@@ -80,8 +104,99 @@ export default function UpdateKomik() {
       setDesc(komik.deskripsi || "");
       setAuthor(komik.pengarang || "");
       setScenes(komik.konten);
+      setCategory(komik.kategori);
     }
   }, [komik]);
+
+  const submit = () => {
+    const options = {
+      method: "POST",
+      headers: new Headers({
+        "Content-Type": "application/x-www-form-urlencoded",
+      }),
+      body:
+        "title=" +
+        title +
+        "&desc=" +
+        description +
+        "&rd=" +
+        releasedate +
+        "&author=" +
+        author +
+        "&id=" +
+        id,
+    };
+    try {
+      fetch("https://ubaya.xyz/react/160421050/uas/updatekomik.php", options)
+        .then((response) => response.json())
+        .then((resjson) => {
+          console.log(resjson);
+          if (resjson.result === "success") {
+            alert(title + " Updated");
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const addKomikKategori = async () => {
+      const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "komik_id=" + id + "&kategori_id=" + selectedCategory,
+      };
+      try {
+        const response = await fetch(
+          "https://ubaya.xyz/react/160421050/uas/tambahkomikkategori.php",
+          options
+        );
+        response.json().then(async (resjson) => {
+          console.log(resjson);
+          setTriggerRefresh((prev) => !prev);
+        });
+      } catch (error) {
+        console.error("Failed to add comic category:", error);
+      }
+    };
+
+    if (selectedCategory) {
+      addKomikKategori();
+    }
+  }, [selectedCategory]);
+
+  const deleteKomikKategori = async (kid: number) => {
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "komik_id=" + id + "&kategori_id=" + kid,
+    };
+    try {
+      const response = await fetch(
+        "https://ubaya.xyz/react/160421050/uas/deletekomikkategori.php",
+        options
+      );
+      response.json().then(async (resjson) => {
+        console.log(resjson);
+        setTriggerRefresh((prev) => !prev);
+      });
+    } catch (error) {
+      console.error("Failed to delete comic categories:", error);
+    }
+  };
+
+  const renderComboBox = () => {
+    return (
+      <View style={{ marginVertical: 10 }}>
+        <RNPickerSelect
+          onValueChange={(value) => setSelectedCategory(value)}
+          items={categoryOption}
+          placeholder={{ label: "Pilih kategori", value: null }}
+        />
+      </View>
+    );
+  };
 
   const renderImageUri = () => {
     if (imageUri !== "") {
@@ -187,6 +302,33 @@ export default function UpdateKomik() {
       />
       <Text style={styles.fontTop}>Nama Pengarang:</Text>
       <TextInput style={styles.input} onChangeText={setAuthor} value={author} />
+      <Button
+        title="Update"
+        style={{ marginBottom: 20 }}
+        onPress={() => submit()}
+      />
+      <Text style={styles.fontTop}>Kategori:</Text>
+      <FlatList
+        data={category}
+        keyExtractor={(item) => item.kategori}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.kategori}</Text>
+            <Button
+              buttonStyle={{ backgroundColor: "rgba(214, 61, 57, 1)" }}
+              icon={{
+                name: "trash",
+                type: "font-awesome",
+                size: 15,
+                color: "white",
+              }}
+              onPress={() => deleteKomikKategori(item.id)}
+            />
+          </View>
+        )}
+      />
+      {renderComboBox()}
+
       <Text style={styles.fontTop}>Scenes:</Text>
       <FlatList
         data={scenes}

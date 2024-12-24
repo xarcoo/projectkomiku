@@ -48,22 +48,6 @@ export default function TambahKomik() {
     state: { title, description, releasedate, author, thumbnail },
   });
 
-  const renderImageUri = () => {
-    if (imageUri !== "") {
-      return (
-        <View style={styles.centered}>
-          <Image
-            style={styles.selectedImage}
-            resizeMode="contain"
-            source={{ uri: imageUri }}
-          />
-          <Button title="Upload" onPress={uploadScene} />
-        </View>
-      );
-    }
-    return null;
-  };
-
   const renderTitleErrors = () => {
     if (isFieldInError("title")) {
       return getErrorsInField("title").map((errorMessage, index) => (
@@ -146,6 +130,22 @@ export default function TambahKomik() {
     }
   };
 
+  const renderImageUri = () => {
+    if (imageUri !== "") {
+      return (
+        <View style={styles.centered}>
+          <Image
+            style={styles.selectedImage}
+            resizeMode="contain"
+            source={{ uri: imageUri }}
+          />
+          {/* <Button title="Upload" onPress={uploadScene} /> */}
+        </View>
+      );
+    }
+    return null;
+  };
+
   const uploadScene = async () => {
     const data = new FormData();
     data.append("id", id);
@@ -174,7 +174,10 @@ export default function TambahKomik() {
     }
   };
 
-  const tambahKomik = async () => {};
+  const tambahKomik = async () => {
+    
+    uploadScene();
+  };
 
   return (
     <ScrollView style={styles.container}>
