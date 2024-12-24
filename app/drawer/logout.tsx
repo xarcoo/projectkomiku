@@ -13,6 +13,7 @@ export default function Logout() {
 
   const doLogout = async () => {
     try {
+      await AsyncStorage.removeItem("uid");
       await AsyncStorage.removeItem("username");
       await AsyncStorage.removeItem("token");
       alert("Logged out successfully");

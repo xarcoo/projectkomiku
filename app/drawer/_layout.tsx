@@ -4,7 +4,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthProvider } from "../authContext";
 import Index from "./index";
 import Kategori from "./kategori";
-import DaftarKomik from "./daftarkomik";
 import TambahKomik from "./tambahkomik";
 import UpdateKomik from "../updatekomik";
 import Logout from './logout';

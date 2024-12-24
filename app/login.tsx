@@ -25,7 +25,8 @@ function Login() {
 
     if (json.result == "success") {
       try {
-        await AsyncStorage.setItem("username", username);
+        await AsyncStorage.setItem("uid", json.data.user_id);
+        await AsyncStorage.setItem("username", json.data.user_name);
         alert("Login successful");
         login();
       } catch (e) {

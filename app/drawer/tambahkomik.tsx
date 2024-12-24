@@ -11,9 +11,11 @@ import {
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Button } from "@rneui/base";
 import { useValidation } from "react-simple-form-validator";
+import RNPickerSelect from "react-native-picker-select";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TambahKomik() {
   const [title, setTitle] = useState("");
@@ -34,8 +36,12 @@ export default function TambahKomik() {
   const [triggerRefresh, setTriggerRefresh] = useState(false);
   const refRBSheet = useRef();
   const [imageUri, setImageUri] = useState("");
-  const [id, setId] = useState("1");
+  const [id, setId] = useState("");
+  const [uid, setUid] = useState("");
   const params = useLocalSearchParams();
+
+  const [categoryOption, setCategoryOption] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const { isFieldInError, getErrorsInField, isFormValid } = useValidation({
     fieldsRules: {
@@ -46,6 +52,67 @@ export default function TambahKomik() {
       thumbnail: { required: true },
     },
     state: { title, description, releasedate, author, thumbnail },
+  });
+
+  const getUid = async () => {
+    try {
+      const uid = await AsyncStorage.getItem("uid");
+      if (uid !== null) {
+        setUid(uid);
+      } else {
+        setUid("");
+      }
+    } catch (e) {
+      console.error("Error reading username from AsyncStorage", e);
+    }
+  };
+
+  useEffect(() => {
+    getUid();
+  }, [uid]);
+
+  const fetchCategories = async () => {
+    try {
+      const options = {
+        method: "POST",
+        headers: new Headers({
+          "Content-Type": "application/x-www-form-urlencoded",
+        }),
+        body: "id=",
+      };
+      const response = await fetch(
+        "https://ubaya.xyz/react/160421050/uas/pilihankategori.php",
+        options
+      );
+      const json = await response.json();
+      setCategoryOption(json.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchId = async () => {
+    try {
+      const options = {
+        method: "POST",
+        headers: new Headers({
+          "Content-Type": "application/x-www-form-urlencoded",
+        }),
+      };
+      const response = await fetch(
+        "https://ubaya.xyz/react/160421050/uas/getmaxid.php",
+        options
+      );
+      const json = await response.json();
+      setId(json.id);
+    } catch (error) {
+      console.error("Error fetching max id:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchId();
   });
 
   const renderTitleErrors = () => {
@@ -118,6 +185,18 @@ export default function TambahKomik() {
     return null;
   };
 
+  const renderComboBox = () => {
+    return (
+      <View style={{ marginVertical: 10 }}>
+        <RNPickerSelect
+          onValueChange={(value) => setSelectedCategory(value)}
+          items={categoryOption}
+          placeholder={{ label: "Pilih kategori", value: null }}
+        />
+      </View>
+    );
+  };
+
   const imgGaleri = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -135,48 +214,109 @@ export default function TambahKomik() {
       return (
         <View style={styles.centered}>
           <Image
-            style={styles.selectedImage}
+            style={styles.sceneImage}
             resizeMode="contain"
             source={{ uri: imageUri }}
           />
-          {/* <Button title="Upload" onPress={uploadScene} /> */}
         </View>
       );
     }
     return null;
   };
 
-  const uploadScene = async () => {
-    const data = new FormData();
-    data.append("id", id);
-
-    const response = await fetch(imageUri);
-    const blob = await response.blob();
-    data.append("image", blob, "scene.png");
-
-    const options = {
-      method: "POST",
-      body: data,
-      headers: {},
+  const tambahKomik = async () => {
+    let komikid = 0;
+    const submitData = () => {
+      try {
+        const options = {
+          method: "POST",
+          headers: new Headers({
+            "Content-Type": "application/x-www-form-urlencoded",
+          }),
+          body:
+            "thumbnail=" +
+            thumbnail +
+            "&" +
+            "title=" +
+            title +
+            "&" +
+            "desc=" +
+            description +
+            "&" +
+            "release_date=" +
+            releasedate +
+            "&" +
+            "author=" +
+            author +
+            "&" +
+            "uid=" +
+            uid,
+        };
+        fetch("https://ubaya.xyz/react/160421050/uas/newkomik.php", options)
+          .then((response) => response.json())
+          .then(async (resjson) => {
+            console.log(resjson);
+          });
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    try {
-      fetch("https://ubaya.xyz/react/160421050/uas/uploadhalaman.php", options)
-        .then((response) => response.json())
-        .then((resjson) => {
-          console.log(resjson);
-          if (resjson.result === "success") alert("sukses");
-          setTriggerRefresh((prev) => !prev);
-          setImageUri("");
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    const addKomikKategori = async () => {
+      try {
+        const options = {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "komik_id=" + id + "&kategori_id=" + selectedCategory,
+        };
+        fetch(
+          "https://ubaya.xyz/react/160421050/uas/tambahkomikkategori.php",
+          options
+        )
+          .then((response) => response.json())
+          .then(async (resjson) => {
+            console.log(resjson);
+          });
+        // setSelectedCategory("");
+      } catch (error) {
+        console.error("Failed to add comic category:", error);
+      }
+    };
 
-  const tambahKomik = async () => {
-    
-    uploadScene();
+    const uploadScene = async () => {
+      try {
+        const data = new FormData();
+        data.append("id", id);
+
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        data.append("image", blob, "scene.png");
+
+        const options = {
+          method: "POST",
+          body: data,
+          headers: {},
+        };
+
+        fetch(
+          "https://ubaya.xyz/react/160421050/uas/uploadhalaman.php",
+          options
+        )
+          .then((response) => response.json())
+          .then((resjson) => {
+            console.log(resjson);
+            if (resjson.result === "success") alert("sukses");
+            setImageUri("");
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    submitData();
+    addKomikKategori();
+    await uploadScene();
+    alert("Comic succesfuly added");
+    router.replace("..");
   };
 
   return (
@@ -219,8 +359,7 @@ export default function TambahKomik() {
       {renderThumbnail()}
 
       <Text style={styles.fontTop}>Kategori:</Text>
-
-      <Button title="Tambah Kategori" onPress={() => tambahKomik()} />
+      {renderComboBox()}
 
       <View style={styles.containerUpload}>
         <Text style={styles.fontTop}>Upload Scene:</Text>
@@ -286,8 +425,8 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   sceneImage: {
-    width: 350,
-    height: 350,
+    width: 400,
+    height: 780,
   },
   selectedImage: {
     width: 350,
