@@ -195,6 +195,44 @@ export default function BacaKomik() {
     }
   };
 
+  const submitFavorit = async () => {
+    try {
+      const userId = (await AsyncStorage.getItem("uid")) ?? "";
+      const options = {
+        method: "POST",
+        headers: new Headers({
+          "Content-Type": "application/x-www-form-urlencoded",
+        }),
+        body: `komik_id=${id}&user_id=${userId}`,
+      };
+
+      const response = await fetch(
+        "https://ubaya.xyz/react/160421050/uas/tambahfavorit.php",
+        options
+      );
+
+      if (response.status === 200) {
+        const result = await response.json();
+
+        if (result.result === "success") {
+          if (result.action === "added") {
+            alert("Komik berhasil ditambahkan ke favorit!");
+          } else if (result.action === "removed") {
+            alert("Komik berhasil dihapus dari favorit!");
+          }
+        } else {
+          alert(`Gagal mengubah status favorit: ${result.Error || "Unknown error"}`);
+        }
+      } else {
+        alert("Gagal mengubah status favorit. Server tidak merespons.");
+      }
+    } catch (error) {
+      console.error("Error submitting favorit:", error);
+      alert("Terjadi kesalahan saat mengubah status favorit.");
+    }
+  };
+
+
   useEffect(() => {
     getUsername();
     fetchComicDetails();
@@ -263,6 +301,12 @@ export default function BacaKomik() {
             {comic.pengarang}
           </Text>
           <Text style={styles.description}>{comic.deskripsi}</Text>
+          <TouchableOpacity
+            style={styles.editLink}
+            onPress={submitFavorit}
+          >
+            <Text style={styles.editLink}>Favorit</Text>
+          </TouchableOpacity>
         </View>
       </View>
       <FlatList

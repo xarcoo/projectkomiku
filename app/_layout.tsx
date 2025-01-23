@@ -18,6 +18,7 @@ function RootLayout() {
         name="login"
         options={{ title: "160421050 - 160421110", headerBackVisible: false }}
       />
+      <Stack.Screen name="drawer/index.tsx" options={{ headerShown: false }} />
       <Stack.Screen name="drawer" options={{ headerShown: false }} />
       <Stack.Screen name="bacakomik" options={{ title: "Baca Komik" }} />
       <Stack.Screen name="updatekomik" options={{ title: "Update Komik" }} />

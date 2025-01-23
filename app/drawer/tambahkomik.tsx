@@ -224,7 +224,8 @@ export default function TambahKomik() {
 
   const tambahKomik = async () => {
     let komikid = 0;
-    const submitData = () => {
+  
+    const submitData = async () => {
       try {
         const options = {
           method: "POST",
@@ -250,78 +251,87 @@ export default function TambahKomik() {
             "uid=" +
             uid,
         };
-        fetch("https://ubaya.xyz/react/160421050/uas/newkomik.php", options)
-          .then((response) => response.json())
-          .then(async (resjson) => {
-            console.log(resjson);
-            alert("Comic succesfuly added");
-          });
+        const response = await fetch(
+          "https://ubaya.xyz/react/160421050/uas/newkomik.php",
+          options
+        );
+        const resjson = await response.json();
+        console.log(resjson);
+        komikid = resjson.id;
+        alert("Comic succesfuly added");
       } catch (error) {
         console.log(error);
       }
     };
-
+  
     const addKomikKategori = async () => {
+      if (!komikid) {
+        console.error("komikid is not set. Cannot add category.");
+        return;
+      }
       try {
         const options = {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: "komik_id=" + id + "&kategori_id=" + selectedCategory,
+          body: "komik_id=" + komikid + "&kategori_id=" + selectedCategory,
         };
-        fetch(
+        const response = await fetch(
           "https://ubaya.xyz/react/160421050/uas/tambahkomikkategori.php",
           options
-        )
-          .then((response) => response.json())
-          .then(async (resjson) => {
-            console.log(resjson);
-          });
+        );
+        const resjson = await response.json();
+        console.log(resjson);
         setSelectedCategory("");
       } catch (error) {
         console.error("Failed to add comic category:", error);
       }
     };
-
+  
     const uploadScene = async () => {
+      if (!komikid) {
+        console.error("komikid is not set. Cannot upload scene.");
+        return;
+      }
       try {
         const data = new FormData();
-        data.append("id", id);
-
+        data.append("id", komikid.toString());
+  
         const response = await fetch(imageUri);
         const blob = await response.blob();
         data.append("image", blob, "scene.png");
-
+  
         const options = {
           method: "POST",
           body: data,
           headers: {},
         };
-
-        fetch(
+  
+        const responseUpload = await fetch(
           "https://ubaya.xyz/react/160421050/uas/uploadhalaman.php",
           options
-        )
-          .then((response) => response.json())
-          .then((resjson) => {
-            console.log(resjson);
-            if (resjson.result === "success") alert("sukses upload halaman");
-            setImageUri("");
-          });
+        );
+        const resjson = await responseUpload.json();
+        console.log(resjson);
+        if (resjson.result === "success") alert("Sukses upload halaman");
+        setImageUri("");
       } catch (error) {
         console.log(error);
       }
     };
-    submitData();
-    addKomikKategori();
+  
+    await submitData();
+    await addKomikKategori();
     await uploadScene();
-
+  
     setThumbnail("");
     setTitle("");
     setDesc("");
     setReleasedate("");
     setAuthor("");
+  
     router.replace("..");
   };
+  
 
   return (
     <ScrollView style={styles.container}>
