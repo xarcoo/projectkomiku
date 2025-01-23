@@ -1,16 +1,13 @@
 import * as React from "react";
 import { Button, Card, Text } from "@rneui/base";
 import { StyleSheet, View, TextInput } from "react-native";
-import { useAuth } from "./authContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
-function Login() {
-  const { login } = useAuth();
+function Register() {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-  const doLogin = async () => {
+  const doRegister = async () => {
     const options = {
       method: "POST",
       headers: new Headers({
@@ -19,22 +16,16 @@ function Login() {
       body: "un=" + username + "&upw=" + password,
     };
     const response = await fetch(
-      "https://ubaya.xyz/react/160421050/uas/login.php",
+      "https://ubaya.xyz/react/160421050/uas/register.php",
       options
     );
     const json = await response.json();
 
     if (json.result == "success") {
-      try {
-        await AsyncStorage.setItem("uid", json.data.user_id);
-        await AsyncStorage.setItem("username", json.data.user_name);
-        alert("Login successful");
-        login();
-      } catch (e) {
-        console.error("Error saving data to AsyncStorage", e);
-      }
+      alert("Berhasil registrasi pengguna baru. Silahkan melakukan login");
+      router.replace("/login");
     } else {
-      alert("Username or password is incorrect");
+      alert(json.message);
     }
   };
 
@@ -44,7 +35,9 @@ function Login() {
         borderRadius: 10,
       }}
     >
-      <Card.Title style={{ fontFamily: "verdana" }}>Silakan Login</Card.Title>
+      <Card.Title style={{ fontFamily: "verdana" }}>
+        Registrasi Pengguna
+      </Card.Title>
       <Card.Divider />
       <View style={styles.viewRow}>
         <Text
@@ -91,21 +84,7 @@ function Login() {
           }}
           title="Submit"
           onPress={() => {
-            doLogin();
-          }}
-        />
-        <Button
-          style={styles.buttonR}
-          titleStyle={{ fontWeight: "bold", color: "rgb(111, 202, 186)" }}
-          buttonStyle={{
-            borderColor: "rgb(111, 202, 186)",
-            borderWidth: 2,
-            borderRadius: 8,
-          }}
-          type="outline"
-          title="Registrasi"
-          onPress={() => {
-            router.replace("/register");
+            doRegister();
           }}
         />
       </View>
@@ -113,7 +92,7 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;
 
 const styles = StyleSheet.create({
   cardStyle: {
@@ -128,10 +107,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   button: {
-    width: 200,
-  },
-  buttonR: {
-    paddingTop: 4,
     width: 200,
   },
   viewRow: {

@@ -19,9 +19,13 @@ function RootLayout() {
         options={{ title: "160421050 - 160421110", headerBackVisible: false }}
       />
       <Stack.Screen name="drawer" options={{ headerShown: false }} />
-      <Stack.Screen name="bacakomik" options={{ title: 'Baca Komik' }} />
-      <Stack.Screen name="updatekomik" options={{ title: 'Update Komik' }} />
-      <Stack.Screen name="daftarkomik" options={{ title: 'Daftar Komik' }} />
+      <Stack.Screen name="bacakomik" options={{ title: "Baca Komik" }} />
+      <Stack.Screen name="updatekomik" options={{ title: "Update Komik" }} />
+      <Stack.Screen name="daftarkomik" options={{ title: "Daftar Komik" }} />
+      <Stack.Screen
+        name="register"
+        options={{ title: "Registrasi Pengguna" }}
+      />
     </Stack>
   );
 }
