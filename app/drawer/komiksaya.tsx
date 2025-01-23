@@ -27,7 +27,6 @@ export default function KomikSaya() {
       } else {
         setUid("");
       }
-      alert(uid);
     } catch (e) {
       console.error("Error reading username from AsyncStorage", e);
     }

@@ -33,12 +33,10 @@ export default function TambahKomik() {
     author: "",
     scenes: null,
   });
-  const [triggerRefresh, setTriggerRefresh] = useState(false);
   const refRBSheet = useRef();
   const [imageUri, setImageUri] = useState("");
   const [id, setId] = useState("");
   const [uid, setUid] = useState("");
-  const params = useLocalSearchParams();
 
   const [categoryOption, setCategoryOption] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -256,6 +254,7 @@ export default function TambahKomik() {
           .then((response) => response.json())
           .then(async (resjson) => {
             console.log(resjson);
+            alert("Comic succesfuly added");
           });
       } catch (error) {
         console.log(error);
@@ -277,7 +276,7 @@ export default function TambahKomik() {
           .then(async (resjson) => {
             console.log(resjson);
           });
-        // setSelectedCategory("");
+        setSelectedCategory("");
       } catch (error) {
         console.error("Failed to add comic category:", error);
       }
@@ -305,7 +304,7 @@ export default function TambahKomik() {
           .then((response) => response.json())
           .then((resjson) => {
             console.log(resjson);
-            if (resjson.result === "success") alert("sukses");
+            if (resjson.result === "success") alert("sukses upload halaman");
             setImageUri("");
           });
       } catch (error) {
@@ -315,7 +314,12 @@ export default function TambahKomik() {
     submitData();
     addKomikKategori();
     await uploadScene();
-    alert("Comic succesfuly added");
+
+    setThumbnail("");
+    setTitle("");
+    setDesc("");
+    setReleasedate("");
+    setAuthor("");
     router.replace("..");
   };
 

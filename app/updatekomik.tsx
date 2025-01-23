@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import RNPickerSelect from "react-native-picker-select";
 import { Button } from "@rneui/base";
 
@@ -284,6 +284,26 @@ export default function UpdateKomik() {
     }
   };
 
+  const deleteKomik = async () => {
+    try {
+      const response = await fetch(
+        "https://ubaya.xyz/react/160421050/uas/deletekomik.php",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "komik_id=" + id,
+        }
+      );
+
+      response.json().then(async (resjson) => {
+        console.log(resjson + " hapus oce");
+        router.replace("/drawer");
+      });
+    } catch (error) {
+      console.error("Error deleting comic:", error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.fontTop}>Judul:</Text>
@@ -375,6 +395,19 @@ export default function UpdateKomik() {
 
         {renderImageUri()}
         <Button title="Pick Scene" onPress={() => refRBSheet.current.open()} />
+        <Button
+          style={{ marginTop: 10 }}
+          buttonStyle={{ backgroundColor: "rgba(214, 61, 57, 1)" }}
+          icon={{
+            name: "trash",
+            type: "font-awesome",
+            size: 15,
+            color: "white",
+          }}
+          onPress={() => deleteKomik()}
+        >
+          Hapus Komik
+        </Button>
       </View>
     </ScrollView>
   );
