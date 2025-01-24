@@ -82,9 +82,23 @@ function Register() {
             backgroundColor: "rgba(111, 202, 186, 1)",
             borderRadius: 8,
           }}
-          title="Submit"
+          title="Register"
           onPress={() => {
             doRegister();
+          }}
+        />
+        <Button
+          style={styles.buttonR}
+          titleStyle={{ fontWeight: "bold", color: "rgb(111, 202, 186)" }}
+          buttonStyle={{
+            borderColor: "rgb(111, 202, 186)",
+            borderWidth: 2,
+            borderRadius: 8,
+          }}
+          type="outline"
+          title="Login"
+          onPress={() => {
+            router.replace("/login");
           }}
         />
       </View>
@@ -107,6 +121,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   button: {
+    width: 200,
+  },
+  buttonR: {
+    paddingTop: 4,
     width: 200,
   },
   viewRow: {

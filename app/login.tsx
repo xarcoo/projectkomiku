@@ -89,7 +89,7 @@ function Login() {
             backgroundColor: "rgba(111, 202, 186, 1)",
             borderRadius: 8,
           }}
-          title="Submit"
+          title="Login"
           onPress={() => {
             doLogin();
           }}
@@ -103,7 +103,7 @@ function Login() {
             borderRadius: 8,
           }}
           type="outline"
-          title="Registrasi"
+          title="Register"
           onPress={() => {
             router.replace("/register");
           }}
